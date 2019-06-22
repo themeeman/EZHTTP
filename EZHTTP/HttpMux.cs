@@ -5,8 +5,8 @@ using System.IO;
 using System.Web;
 
 namespace EZHTTP {
-    class HttpMux {
-        private readonly HandlerNode handlers;
+    public class HttpMux {
+        private readonly HandlerNode handlers = new HandlerNode();
         private HttpListener Listener { get; } = new HttpListener();
         public static readonly Action<HttpListenerContext> DefaultNotFound =
             context => context.Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -26,12 +26,19 @@ namespace EZHTTP {
                 }
                 AddPrefix(ss);
             }
+        }
 
-            handlers = new HandlerNode();
+        ~HttpMux() {
+            Listener.Stop();
         }
 
         public void AddPrefix(string prefix) {
             Listener.Prefixes.Add(prefix);
+        }
+
+        public void HandleAll(Action<HttpListenerContext> callback) {
+            handlers.Callback = callback;
+            handlers.IsFixed = false;
         }
 
         public void Handle(string pattern, Action<HttpListenerContext> callback) {

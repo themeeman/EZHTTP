@@ -2,7 +2,7 @@
 using System.Text;
 
 namespace EZHTTP {
-    static class Utility {
+    public static class Utility {
         public static void Write(this Stream stream, byte[] bytes) {
             stream.Write(bytes, 0, bytes.Length);
         }

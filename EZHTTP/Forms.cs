@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 
 namespace EZHTTP {
-    class Forms {
+    public static class Forms {
         public static Dictionary<string, string> ParseForm(string query) {
             var p = HttpUtility.ParseQueryString(query);
             return p.AllKeys.ToDictionary(k => k, k => p[k], StringComparer.OrdinalIgnoreCase);

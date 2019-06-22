@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EZHTTP {
-    class HandlerNode {
+    public class HandlerNode {
         public Action<HttpListenerContext> Callback { get; set; }
         public Dictionary<string, HandlerNode> ChildNodes { get; }
         public bool IsFixed { get; set; }

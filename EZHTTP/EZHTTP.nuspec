@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>EZHTTP</id>
+    <version>0.2.3</version>
+    <title>EZHTTP</title>
+    <authors>tomvanwoow</authors>
+    <owners>tomvanwoow</owners>
+    <projectUrl>http://www.nuget.org/packages/EZHTTP/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An easy to use HTTP router</description>
+    <copyright>Copyright 2019</copyright>
+  </metadata>
+</package>
