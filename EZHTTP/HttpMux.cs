@@ -1,18 +1,23 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Net;
 using System.IO;
 using System.Web;
 
 namespace EZHTTP {
-    public class HttpMux {
-        private readonly HandlerNode handlers = new HandlerNode();
-        private HttpListener Listener { get; } = new HttpListener();
+    public struct HttpMux {
+        private readonly HandlerNode handlers;
+        private HttpListener Listener { get; }
         public static readonly Action<HttpListenerContext> DefaultNotFound =
             context => context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-        public Action<HttpListenerContext> NotFound { get; set; } = DefaultNotFound;
+        public Action<HttpListenerContext> NotFound { get; set; }
 
         public HttpMux(params string[] prefixes) {
+            handlers = new HandlerNode();
+            Listener = new HttpListener();
+            NotFound = DefaultNotFound;
             foreach (string s in prefixes) {
                 string ss = s;
                 if (ss[0] == ':' && int.TryParse(ss.Substring(1, ss.Length - 1), out int x)) {
@@ -28,17 +33,8 @@ namespace EZHTTP {
             }
         }
 
-        ~HttpMux() {
-            Listener.Stop();
-        }
-
         public void AddPrefix(string prefix) {
             Listener.Prefixes.Add(prefix);
-        }
-
-        public void HandleAll(Action<HttpListenerContext> callback) {
-            handlers.Callback = callback;
-            handlers.IsFixed = false;
         }
 
         public void Handle(string pattern, Action<HttpListenerContext> callback) {
@@ -69,23 +65,14 @@ namespace EZHTTP {
             });
         }
 
-        public void ServeString(string pattern, string s, string contentType = "text/plain") {
-            Handle(pattern, context => {
-                var buffer = System.Text.Encoding.ASCII.GetBytes(s);
-                context.Response.ContentType = contentType;
-                context.Response.OutputStream.Write(buffer);
-            });
-        }
-
         private void OnRequest(IAsyncResult result) {
             var listener = result.AsyncState as HttpListener;
-            var context = listener.EndGetContext(result);
+            var context = listener!.EndGetContext(result);
             listener.BeginGetContext(OnRequest, listener);
             var handler = handlers.GetNode(context.Request.Url.AbsolutePath);
             if (handler != null && handler.Callback != null) {
                 handler.Callback(context);
-            }
-            else {
+            } else {
                 NotFound(context);
             }
             context.Response.OutputStream.Close();
